@@ -7,6 +7,23 @@ import redis
 
 db = redis.Redis(decode_responses=True)
 
+users = [
+    {"id": 0, "name": "Joe Smith", "email": "joe@smith.org", "status": "Active"},
+    {
+        "id": 1,
+        "name": "Angie MacDowell",
+        "email": "angie@macdowell.org",
+        "status": "Active",
+    },
+    {
+        "id": 2,
+        "name": "Fuqua Tarkenton",
+        "email": "fuqua@tarkenton.org",
+        "status": "Active",
+    },
+    {"id": 3, "name": "Kim Yee", "email": "kim@yee.org", "status": "Inactive"},
+]
+
 
 app = FastAPI()
 
@@ -25,8 +42,14 @@ tasks = [
 async def index(
     request: Request, response: Response, hx_request: Optional[str] = Header(None)
 ):
-    context = {"request": request, "tasks": tasks}
+    context = {"request": request, "tasks": tasks, "users": users}
     return templates.TemplateResponse("index.html", context)
+
+
+@app.delete("/delete/{id}")
+async def delete(request: Request, id: str, response: Response):
+    response.status_code = status.HTTP_200_OK
+    return response
 
 
 @app.post("/start/{id}")
@@ -38,7 +61,7 @@ async def start(
 ):
     db.set(f"progress_{id}", 0)
     context = {"request": request, "id": id}
-    return templates.TemplateResponse("start.html", context)
+    return templates.TemplateResponse("running.html", context)
 
 
 @app.get("/job/progress/{id}")
