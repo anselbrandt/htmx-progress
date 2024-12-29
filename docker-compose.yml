@@ -1,0 +1,10 @@
+services:
+
+  redis:
+    container_name: redis
+    image: redis
+    restart: always
+    environment:
+      - REDIS_PASSWORD=redis
+    ports:
+      - 6379:6379
